@@ -1,33 +1,14 @@
 import React, { useState } from "react";
 import "@fontsource/poppins";
 import { EnvelopeIcon, LockClosedIcon, LockOpenIcon } from "@heroicons/react/24/outline";
-import bg from "../../assets/backgroung_img.jpg";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import bg from "../../assets/backgroung_img.jpg"; 
+import { Link } from "react-router-dom";
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
-  const navigate = useNavigate();
 
   const togglePassword = () => {
     setShowPassword((prev) => !prev);
-  };
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post("http://localhost:5000/api/auth/login", formData);
-      alert("Login successful");
-      navigate("/note-dashboard");
-    } catch (err) {
-      const msg = err.response?.data?.message || "Login failed";
-      alert(msg);
-    }
   };
 
   return (
@@ -40,15 +21,12 @@ const LoginForm = () => {
         <h1 className="text-center text-3xl font-bold mb-2 text-[#FFD1DC] tracking-wide">Note App</h1>
         <p className="text-center text-sm text-white/80 mb-8">Welcome back to your private notebook</p>
 
-        <form className="space-y-6" onSubmit={handleLogin}>
+        <form className="space-y-6">
           {/* Email */}
           <div className="relative border-b-2 border-white group">
             <EnvelopeIcon className="absolute right-2 top-4 w-5 h-5 text-[#FFD1DC]" />
             <input
               type="email"
-              name="email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
               className="peer w-full h-12 bg-transparent outline-none text-white px-1 pr-8"
             />
@@ -62,6 +40,7 @@ const LoginForm = () => {
 
           {/* Password */}
           <div className="relative border-b-2 border-white group">
+            {/* Toggle Lock Icon */}
             {showPassword ? (
               <LockOpenIcon
                 onClick={togglePassword}
@@ -73,11 +52,9 @@ const LoginForm = () => {
                 className="absolute right-2 top-4 w-5 h-5 text-[#FFD1DC] cursor-pointer"
               />
             )}
+
             <input
               type={showPassword ? "text" : "password"}
-              name="password"
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               required
               className="peer w-full h-12 bg-transparent outline-none text-white px-1 pr-8"
             />

@@ -7,37 +7,13 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 import bg from "../../assets/backgroung_img.jpg";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { Link } from "react-router-dom";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
-
-  const navigate = useNavigate();
 
   const togglePassword = () => {
     setShowPassword((prev) => !prev);
-  };
-
-  const handleSignup = async (e) => {
-    e.preventDefault();
-
-    try {
-      await axios.post(
-        "http://localhost:5000/api/auth/signup",
-        formData
-      );
-      alert("Signup successful");
-      navigate("/note-dashboard");
-    } catch (err) {
-      const msg = err.response?.data?.message || "Signup failed";
-      alert(msg);
-    }
   };
 
   return (
@@ -54,17 +30,12 @@ const Signup = () => {
           Create your account to start writing notes
         </p>
 
-        <form className="space-y-6" onSubmit={handleSignup}>
+        <form className="space-y-6">
           {/* Name */}
           <div className="relative border-b-2 border-white group">
             <UserIcon className="absolute right-2 top-4 w-5 h-5 text-[#FFD1DC]" />
             <input
               type="text"
-              name="name"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
               required
               className="peer w-full h-12 bg-transparent outline-none text-white px-1 pr-8"
             />
@@ -83,11 +54,6 @@ const Signup = () => {
             <EnvelopeIcon className="absolute right-2 top-4 w-5 h-5 text-[#FFD1DC]" />
             <input
               type="email"
-              name="email"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
               required
               className="peer w-full h-12 bg-transparent outline-none text-white px-1 pr-8"
             />
@@ -117,11 +83,6 @@ const Signup = () => {
 
             <input
               type={showPassword ? "text" : "password"}
-              name="password"
-              value={formData.password}
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
               required
               className="peer w-full h-12 bg-transparent outline-none text-white px-1 pr-8"
             />

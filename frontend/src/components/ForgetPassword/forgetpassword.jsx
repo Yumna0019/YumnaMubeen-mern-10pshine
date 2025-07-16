@@ -3,13 +3,10 @@ import { useNavigate } from "react-router-dom";
 
 const ForgetPassword = () => {
   const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
-  const [showOtpInput, setShowOtpInput] = useState(false);
-  const [emailDisabled, setEmailDisabled] = useState(false);
   const navigate = useNavigate();
 
-  const handleSendOtp = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email) {
@@ -29,59 +26,31 @@ const ForgetPassword = () => {
       const data = await res.json();
 
       if (data.success) {
-        alert("OTP sent to your email");
-        setShowOtpInput(true);
-        setEmailDisabled(true);
+        alert(data.message);
+        navigate("/verify-otp", { state: { email } }); // or wherever your OTP flow is
       } else {
         setError(data.message || "Email not found");
       }
     } catch (err) {
-      setError(err.data.message || "Server error");
-    }
-  };
-
-  const handleVerifyOtp = async () => {
-    if (!otp) return setError("Please enter the OTP");
-
-    try {
-      const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, otp }),
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        navigate("/reset-password", { state: { email } });
-      } else {
-        setError(data.message || "OTP verification failed");
-      }
-    } catch (err) {
-      setError(err.data.message || "Server error");
+      setError( err.data.message || "Server error");
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-100 to-pink-200 flex items-center justify-center px-4">
       <div className="bg-white shadow-lg rounded-xl w-full max-w-md p-8">
-        <h2 className="text-2xl font-bold text-[#C44265] mb-2 text-center">
-          Forgot Password
-        </h2>
+        <h2 className="text-2xl font-bold text-[#C44265] mb-2 text-center">Forgot Password</h2>
         <p className="text-gray-600 text-sm mb-6 text-center">
           Enter your email to receive a reset OTP
         </p>
 
-        <form onSubmit={handleSendOtp} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-gray-700 text-sm font-medium mb-1">
               Email Address
             </label>
             <input
               type="email"
-              disabled={emailDisabled}
               className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-[#C44265]"
               value={email}
               onChange={(e) => {
@@ -91,51 +60,27 @@ const ForgetPassword = () => {
               placeholder="you@example.com"
               required
             />
+            {error && (
+              <p className="text-red-500 text-sm mt-1">{error}</p>
+            )}
           </div>
 
-          {!showOtpInput && (
-            <div className="flex justify-between">
-              <button
-                type="button"
-                onClick={() => navigate("/login")}
-                className="px-4 py-2 rounded-md text-sm text-gray-700 hover:underline"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-6 py-2 rounded-md text-white bg-[#C44265] hover:bg-[#a12f4e] text-sm font-semibold"
-              >
-                Send OTP
-              </button>
-            </div>
-          )}
-        </form>
-
-        {showOtpInput && (
-          <div className="mt-6 space-y-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Enter 6-digit OTP sent to email
-            </label>
-            <input
-              type="text"
-              maxLength="6"
-              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-[#C44265]"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              placeholder="Enter OTP"
-            />
-
+          <div className="flex justify-between">
             <button
-              onClick={handleVerifyOtp}
-              className="w-full py-2 rounded-md text-white bg-[#C44265] hover:bg-[#a12f4e] text-sm font-semibold"
+              type="button"
+              onClick={() => navigate("/login")}
+              className="px-4 py-2 rounded-md text-sm text-gray-700 hover:underline"
             >
-              Verify OTP
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-6 py-2 rounded-md text-white bg-[#C44265] hover:bg-[#a12f4e] text-sm font-semibold"
+            >
+              Send OTP
             </button>
           </div>
-        )}
-
-        {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
+        </form>
       </div>
     </div>
   );
