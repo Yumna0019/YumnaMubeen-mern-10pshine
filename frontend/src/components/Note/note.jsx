@@ -1,3 +1,4 @@
+//note
 const Note = () => {
     return (
         <>
