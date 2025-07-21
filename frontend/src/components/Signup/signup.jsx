@@ -1,4 +1,4 @@
-// signup
+// signup.
 import React, { useState } from "react";
 import "@fontsource/poppins";
 import {
