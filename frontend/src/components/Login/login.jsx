@@ -1,10 +1,14 @@
-//  login..
 import React, { useState } from "react";
 import "@fontsource/poppins";
-import { EnvelopeIcon, LockClosedIcon, LockOpenIcon } from "@heroicons/react/24/outline";
+import {
+  EnvelopeIcon,
+  LockClosedIcon,
+  LockOpenIcon,
+} from "@heroicons/react/24/outline";
 import bg from "../../assets/backgroung_img.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import {toast} from "react-toastify";
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -20,16 +24,25 @@ const LoginForm = () => {
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post("http://localhost:5000/api/auth/login", formData);
-      alert("Login successful");
-      navigate("/note-dashboard");
-    } catch (err) {
-      const msg = err.response?.data?.message || "Login failed";
-      alert(msg);
+  e.preventDefault();
+  try {
+    const res = await axios.post("http://localhost:5000/api/auth/login", formData);
+
+    const { token } = res.data;
+    
+    if (token) {
+      localStorage.setItem("token", token); // Save token
+      navigate("/note-dashboard", { state: { toast: "Login successfully" } });
+    } else {
+      toast.error("Token missing in response");
     }
-  };
+  } catch (err) {
+    const msg = err.response?.data?.message || "Login failed";
+    toast.error(msg);
+    console.error("Login error:", msg);
+  }
+};
+
 
   return (
     <div
@@ -38,8 +51,12 @@ const LoginForm = () => {
     >
       <div className="w-full max-w-md bg-white/10 backdrop-blur-md border border-white/30 rounded-2xl p-8 shadow-xl text-white">
         {/* App Branding */}
-        <h1 className="text-center text-3xl font-bold mb-2 text-[#FFD1DC] tracking-wide">Note App</h1>
-        <p className="text-center text-sm text-white/80 mb-8">Welcome back to your private notebook</p>
+        <h1 className="text-center text-3xl font-bold mb-2 text-[#FFD1DC] tracking-wide">
+          Note App
+        </h1>
+        <p className="text-center text-sm text-white/80 mb-8">
+          Welcome back to your private notebook
+        </p>
 
         <form className="space-y-6" onSubmit={handleLogin}>
           {/* Email */}
@@ -49,14 +66,18 @@ const LoginForm = () => {
               type="email"
               name="email"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
               required
               className="peer w-full h-12 bg-transparent outline-none text-white px-1 pr-8"
             />
-            <label className="absolute left-1 top-1/2 transform -translate-y-1/2 text-white/80 font-medium text-sm transition-all duration-300 
+            <label
+              className="absolute left-1 top-1/2 transform -translate-y-1/2 text-white/80 font-medium text-sm transition-all duration-300 
               peer-focus:top-[-8px] peer-focus:text-sm 
               peer-valid:top-[-8px] peer-valid:text-sm
-              group-hover:top-[-8px]">
+              group-hover:top-[-8px]"
+            >
               Email
             </label>
           </div>
@@ -78,21 +99,30 @@ const LoginForm = () => {
               type={showPassword ? "text" : "password"}
               name="password"
               value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
               required
               className="peer w-full h-12 bg-transparent outline-none text-white px-1 pr-8"
             />
-            <label className="absolute left-1 top-1/2 transform -translate-y-1/2 text-white/80 font-medium text-sm transition-all duration-300 
+            <label
+              className="absolute left-1 top-1/2 transform -translate-y-1/2 text-white/80 font-medium text-sm transition-all duration-300 
               peer-focus:top-[-8px] peer-focus:text-sm 
               peer-valid:top-[-8px] peer-valid:text-sm
-              group-hover:top-[-8px]">
+              group-hover:top-[-8px]"
+            >
               Password
             </label>
           </div>
 
           {/* Forgot password */}
           <div className="flex justify-between text-sm text-white/80">
-            <Link to="/forget-password" className="hover:underline hover:text-[#672541]">Forgot Password?</Link>
+            <Link
+              to="/forget-password"
+              className="hover:underline hover:text-[#672541]"
+            >
+              Forgot Password?
+            </Link>
           </div>
 
           {/* Login Button */}
@@ -107,7 +137,10 @@ const LoginForm = () => {
           <div className="text-sm text-center mt-4">
             <p>
               Don't have an account?{" "}
-              <Link to="/signup" className="font-semibold text-[#FFD1DC] hover:underline hover:text-[#C44265]">
+              <Link
+                to="/signup"
+                className="font-semibold text-[#FFD1DC] hover:underline hover:text-[#C44265]"
+              >
                 Signup
               </Link>
             </p>
