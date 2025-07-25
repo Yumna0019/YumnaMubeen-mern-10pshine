@@ -28,7 +28,7 @@ const ForgetPassword = () => {
 
       if (data.success) {
         alert(data.message);
-        navigate("/verify-otp", { state: { email } }); // or wherever your OTP flow is
+        navigate("/verify-otp", { state: { email } }); 
       } else {
         setError(data.message || "Email not found");
       }
