@@ -121,3 +121,17 @@ exports.verifyOTP = (req, res) => {
   otpStore.delete(email); // ✅ OTP verified
   res.json({ success: true, email }); // Return email so frontend can pass it to /reset-password
 };
+
+exports.getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(user);
+  } catch (err) {
+    console.error("Error in getMe:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
