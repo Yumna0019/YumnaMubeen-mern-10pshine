@@ -122,6 +122,7 @@ exports.verifyOTP = (req, res) => {
   res.json({ success: true, email }); // Return email so frontend can pass it to /reset-password
 };
 
+// Profile
 exports.getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select("-password");
