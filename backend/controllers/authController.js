@@ -3,8 +3,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
-const otpStore = new Map(); // In-memory store (replace with DB in production)
-
+const otpStore = new Map(); 
+const logger = require('../utils/logger');
 
 exports.signup = async (req, res) => {
   try {
@@ -75,7 +75,6 @@ exports.resetPassword = async (req, res) => {
   }
 };
 
-// ✅ Send Reset OTP
 exports.sendResetOTP = async (req, res) => {
   const { email } = req.body;
 
@@ -87,7 +86,8 @@ exports.sendResetOTP = async (req, res) => {
       return res.status(404).json({ success: false, message: "User not found with this email" });
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
-    const expiresAt = Date.now() + 5 * 60 * 1000; // expires in 5 minutes
+    // const expiresAt = Date.now() + 5 * 60 * 1000; // expires in 5 minutes
+    const otpExpiry = Date.now() + 1 * 60 * 60 * 1000; // 1 hour from now
 
     // Store OTP in memory
     otpStore.set(email, { otp, expiresAt });
@@ -100,7 +100,7 @@ exports.sendResetOTP = async (req, res) => {
       message: `OTP sent to ${email}`,
     });
   } catch (err) {
-    console.error("❌ Error sending OTP:", err.message);
+    console.error(" Error sending OTP:", err.message);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -118,6 +118,6 @@ exports.verifyOTP = (req, res) => {
   if (record.otp !== otp)
     return res.status(400).json({ success: false, message: "Invalid OTP" });
 
-  otpStore.delete(email); // ✅ OTP verified
-  res.json({ success: true, email }); // Return email so frontend can pass it to /reset-password
+  otpStore.delete(email); 
+  res.json({ success: true, email }); 
 };
