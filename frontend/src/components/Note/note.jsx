@@ -20,7 +20,7 @@ const Note = () => {
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location, navigate]);
-
+  
   const fetchNotes = async () => {
     try {
       const res = await axios.get("http://localhost:5000/api/notes", {
