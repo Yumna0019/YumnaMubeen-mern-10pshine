@@ -1,4 +1,3 @@
-//  login..
 import React, { useState } from "react";
 import "@fontsource/poppins";
 import {
@@ -25,16 +24,25 @@ const LoginForm = () => {
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post("http://localhost:5000/api/auth/login", formData);
+  e.preventDefault();
+  try {
+    const res = await axios.post("http://localhost:5000/api/auth/login", formData);
+
+    const { token } = res.data;
+    
+    if (token) {
+      localStorage.setItem("token", token); // Save token
       navigate("/note-dashboard", { state: { toast: "Login successfully" } });
-    } catch (err) {
-      const msg = err.response?.data?.message || "Login failed";
-      toast.error(msg);
-      console.error("Login error:", msg);
+    } else {
+      toast.error("Token missing in response");
     }
-  };
+  } catch (err) {
+    const msg = err.response?.data?.message || "Login failed";
+    toast.error(msg);
+    console.error("Login error:", msg);
+  }
+};
+
 
   return (
     <div

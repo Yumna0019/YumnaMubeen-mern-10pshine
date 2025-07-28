@@ -1,4 +1,3 @@
-// /resetpassword..
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {toast} from "react-toastify";
@@ -12,31 +11,32 @@ const ResetPassword = () => {
   const email = location.state?.email;
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!email) return toast.error("No email found. Go back to forgot password.");
+  e.preventDefault();
+  if (!email) return toast.error("No email found. Go back to forgot password.");
+  if (password !== confirmPassword) return toast.error("Password does not match");
 
-    if (password !== confirmPassword)
-      return toast.error("Password does not match");
+  try {
+    const res = await fetch("http://localhost:5000/api/auth/reset-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-    try {
-      const res = await fetch("http://localhost:5000/api/auth/reset-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+    const data = await res.json();
 
-      const data = await res.json();
-      if (data.success) {
-        toast.success("Password Reset successfully");
-        navigate("/note-dashboard");
-      } else {
-        toast.error(data.message || "Reset failed");
-      }
-    } catch (err) {
-      toast.error(err.data.message || "Server error");
+    if (data.success) {
+      // Store token in localStorage
+      localStorage.setItem("token", data.token);
 
+      toast.success("Password Reset successfully");
+      navigate("/note-dashboard");
+    } else {
+      toast.error(data.message || "Reset failed");
     }
-  };
+  } catch (err) {
+    toast.error(err.data.message || "Server error");
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-100 to-pink-200 px-4">
