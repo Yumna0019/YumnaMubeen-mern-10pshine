@@ -1,21 +1,22 @@
 // /resetpassword..
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import {toast} from "react-toastify";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email) return setError("No email found. Go back to forgot password.");
+    if (!email) return toast.error("No email found. Go back to forgot password.");
 
     if (password !== confirmPassword)
-      return setError("Passwords do not match");
+      return toast.error("Password does not match");
 
     try {
       const res = await fetch("http://localhost:5000/api/auth/reset-password", {
@@ -26,13 +27,14 @@ const ResetPassword = () => {
 
       const data = await res.json();
       if (data.success) {
-        alert(data.message);
+        toast.success("Password Reset successfully");
         navigate("/note-dashboard");
       } else {
-        setError(data.message || "Reset failed");
+        toast.error(data.message || "Reset failed");
       }
     } catch (err) {
-      setError(err.data.message || "Server error");
+      toast.error(err.data.message || "Server error");
+
     }
   };
 
