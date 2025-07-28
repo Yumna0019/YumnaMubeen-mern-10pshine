@@ -10,6 +10,7 @@ import Profile from './components/Profile/profile';
 
 function App() {
   return (
+  <>
     <Router>
       <Routes>
         <Route path="/" element={<LoginForm />} />
@@ -22,6 +23,8 @@ function App() {
         
       </Routes>
     </Router>
+    <ToastContainer position="top-center" autoClose={3000} />
+  </>
   );
 }
 
