@@ -5,9 +5,12 @@ import Signup from './components/Signup/signup';
 import ForgetPassword from './components/ForgetPassword/forgetpassword';
 import ResetPassword from './components/ResetPassword/resetpassword';
 import Note from './components/Note/note';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
+  <>
     <Router>
       <Routes>
         <Route path="/" element={<LoginForm />} />
@@ -19,6 +22,8 @@ function App() {
         
       </Routes>
     </Router>
+    <ToastContainer position="top-center" autoClose={3000} />
+  </>
   );
 }
 
