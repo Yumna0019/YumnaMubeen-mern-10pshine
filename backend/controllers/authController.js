@@ -10,12 +10,28 @@ exports.signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
     const userExists = await User.findOne({ email });
-    if (userExists) return res.status(400).json({ message: 'User already exists' });
+
+    if (userExists)
+      return res.status(400).json({ message: 'User already exists' });
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({ name, email, password: hashedPassword });
-    res.status(201).json({ message: 'Signup successful' });
+
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: '1h',
+    });
+
+    res.status(201).json({
+      message: 'Signup successful',
+      token,
+      user: {
+        name: user.name,
+        email: user.email,
+        _id: user._id,
+      },
+    });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
 };
@@ -61,7 +77,10 @@ exports.resetPassword = async (req, res) => {
 
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+    if (!user)
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
     user.password = hashedPassword;
@@ -69,8 +88,24 @@ exports.resetPassword = async (req, res) => {
     user.resetTokenExpiry = undefined;
     await user.save();
 
-    res.json({ success: true, message: "Password reset successful" });
+    // Create token
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+
+    // Send token and user back in ONE response
+    res.status(200).json({
+      success: true,
+      message: "Password reset successfully",
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
   } catch (err) {
+    console.error("Reset password error:", err);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -87,7 +122,7 @@ exports.sendResetOTP = async (req, res) => {
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
     // const expiresAt = Date.now() + 5 * 60 * 1000; // expires in 5 minutes
-    const otpExpiry = Date.now() + 1 * 60 * 60 * 1000; // 1 hour from now
+    const expiresAt = Date.now() + 1 * 60 * 60 * 1000; // 1 hour from now
 
     // Store OTP in memory
     otpStore.set(email, { otp, expiresAt });
