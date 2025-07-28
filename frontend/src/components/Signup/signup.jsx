@@ -1,4 +1,3 @@
-// signup..
 import React, { useState } from "react";
 import "@fontsource/poppins";
 import {
@@ -10,7 +9,7 @@ import {
 import bg from "../../assets/backgroung_img.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -29,11 +28,14 @@ const Signup = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/auth/signup",formData);
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/signup",
+        formData
+      );
+      localStorage.setItem("token", res.data.token); 
       navigate("/note-dashboard" , { state: { toast: "Signup successfully" } });
     } catch (err) {
-      const msg = err.response?.data?.message || "Signup failed";
-      toast.error(msg);
+      toast.error(err.response?.data?.message || "Signup failed");
     }
   };
 

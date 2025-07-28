@@ -1,4 +1,3 @@
-//forgetpassword
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {toast} from "react-toastify";
@@ -57,7 +56,7 @@ const ForgetPassword = () => {
       const data = await res.json();
 
       if (data.success) {
-        toast.success("Email verified successfulLY");
+        toast.success("Email verified successfully");
         navigate("/reset-password", { state: { email } });
       } else {
         toast.error(data.message || "OTP verification failed");
