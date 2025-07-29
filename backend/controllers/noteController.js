@@ -45,4 +45,24 @@ const deleteNote = async (req, res) => {
   }
 };
 
-module.exports = { createNote, getNotes, updateNote, deleteNote };
+// Favorite
+const toggleFavorite = async (req, res) => {
+  try {
+    const note = await Note.findById(req.params.id);
+    if (!note) return res.status(404).json({ message: "Note not found" });
+
+    if (note.user.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
+
+    note.isFavorite = !note.isFavorite;
+    await note.save({ timestamps: false });
+
+    res.status(200).json(note);
+  } catch (error) {
+    console.error("Toggle favorite error:", error.message);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+module.exports = { createNote, getNotes, updateNote, deleteNote, toggleFavorite };

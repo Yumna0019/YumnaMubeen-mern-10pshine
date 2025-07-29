@@ -1,3 +1,4 @@
+// authController.js.......
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -156,3 +157,22 @@ exports.verifyOTP = (req, res) => {
   otpStore.delete(email); 
   res.json({ success: true, email }); 
 };
+
+// Profile
+exports.getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(user);
+  } catch (err) {
+    console.error("Error in getMe:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
+///////////////////////////////////////////////////////////////////////////////
