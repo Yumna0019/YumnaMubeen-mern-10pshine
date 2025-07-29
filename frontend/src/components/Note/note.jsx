@@ -3,6 +3,7 @@ import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
+import RichTextEditor from "../RichTextEditor/RichTextEditor";
 
 const Note = () => {
   const [notes, setNotes] = useState([]);
@@ -147,7 +148,7 @@ const Note = () => {
       <button
         className="bg-[#4c8bc7] text-white px-4 py-2 rounded hover:bg-blue-700 mb-4"
         onClick={() => {
-          setEditingNoteId(null);
+          setEditingNoteId(null); 
           setFormData({ title: "", content: "" });
           setShowPopup(true);
         }}
@@ -171,13 +172,9 @@ const Note = () => {
               }
               className="w-full border p-2 mb-3 rounded"
             />
-            <textarea
-              placeholder="Content"
-              value={formData.content}
-              onChange={(e) =>
-                setFormData({ ...formData, content: e.target.value })
-              }
-              className="w-full border p-2 mb-3 rounded h-24"
+            <RichTextEditor
+              content={formData.content}
+              onChange={(value) => setFormData({ ...formData, content: value })}
             />
             <div className="flex justify-end space-x-2">
               <button onClick={resetForm} className="text-gray-600">
@@ -211,11 +208,16 @@ const Note = () => {
             </div>
 
             <h3 className="text-lg font-semibold">{note.title}</h3>
-            <p className="text-gray-700 mt-2">
-              {note.content.length > 100
-                ? `${note.content.substring(0, 100)}...`
-                : note.content}
-            </p>
+            <div
+              className="text-gray-700 mt-2 prose"
+              dangerouslySetInnerHTML={{
+                __html:
+                  note.content.length > 100
+                    ? `${note.content.substring(0, 100)}...`
+                    : note.content,
+              }}
+            />
+
             <p className="text-sm text-gray-500 mt-2">
               {new Date(note.updatedAt).toLocaleString(undefined, {
                 year: "numeric",
