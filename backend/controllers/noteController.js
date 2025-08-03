@@ -1,4 +1,4 @@
-const Note = require('../models/Note');
+const Note = require("../models/Note");
 
 // Create
 const createNote = async (req, res) => {
@@ -7,7 +7,7 @@ const createNote = async (req, res) => {
     await note.save();
     res.status(201).json(note);
   } catch (err) {
-    res.status(500).json({ message: 'Error creating note' });
+    res.status(500).json({ message: "Error creating note" });
   }
 };
 
@@ -17,7 +17,7 @@ const getNotes = async (req, res) => {
     const notes = await Note.find({ user: req.user._id });
     res.json(notes);
   } catch (err) {
-    res.status(500).json({ message: 'Error fetching notes' });
+    res.status(500).json({ message: "Error fetching notes" });
   }
 };
 
@@ -31,7 +31,7 @@ const updateNote = async (req, res) => {
     );
     res.json(updated);
   } catch (err) {
-    res.status(500).json({ message: 'Error updating note' });
+    res.status(500).json({ message: "Error updating note" });
   }
 };
 
@@ -39,20 +39,21 @@ const updateNote = async (req, res) => {
 const deleteNote = async (req, res) => {
   try {
     await Note.findOneAndDelete({ _id: req.params.id, user: req.user._id });
-    res.json({ message: 'Note deleted' });
+    res.json({ message: "Note deleted" });
   } catch (err) {
-    res.status(500).json({ message: 'Error deleting note' });
+    res.status(500).json({ message: "Error deleting note" });
   }
 };
 
-// Favorite
+// favorite
 const toggleFavorite = async (req, res) => {
   try {
-    const note = await Note.findById(req.params.id);
-    if (!note) return res.status(404).json({ message: "Note not found" });
+    const noteId = req.params.id;
+    const userId = req.user._id;
 
-    if (note.user.toString() !== req.user._id.toString()) {
-      return res.status(401).json({ message: "Not authorized" });
+    const note = await Note.findOne({ _id: noteId, user: userId });
+    if (!note) {
+      return res.status(404).json({ message: "Note not found" });
     }
 
     note.isFavorite = !note.isFavorite;
@@ -60,9 +61,15 @@ const toggleFavorite = async (req, res) => {
 
     res.status(200).json(note);
   } catch (error) {
-    console.error("Toggle favorite error:", error.message);
+    console.error("Toggle favorite error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-module.exports = { createNote, getNotes, updateNote, deleteNote, toggleFavorite };
+module.exports = {
+  createNote,
+  getNotes,
+  updateNote,
+  deleteNote,
+  toggleFavorite,
+};
