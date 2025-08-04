@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Underline from "@tiptap/extension-underline";
-import Code from "@tiptap/extension-code";
 
 const RichTextEditor = ({ content, onChange, className = "" }) => {
   const [editorState, setEditorState] = useState({});
 
   const editor = useEditor({
-    extensions: [StarterKit, Underline, Code],
+    extensions: [StarterKit],
     content,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());

@@ -58,16 +58,17 @@ const Signup = () => {
           <div className="relative border-b-2 border-white group">
             <UserIcon className="absolute right-2 top-4 w-5 h-5 text-[#FFD1DC]" />
             <input
+              id="name"
               type="text"
               name="name"
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              required
+              required 
               className="peer w-full h-12 bg-transparent outline-none text-white px-1 pr-8"
             />
-            <label
+            <label htmlFor="name" 
               className="absolute left-1 top-1/2 transform -translate-y-1/2 text-white/80 font-medium text-sm transition-all duration-300 
     peer-focus:top-[-8px] 
     peer-valid:top-[-8px] 
@@ -81,16 +82,17 @@ const Signup = () => {
           <div className="relative border-b-2 border-white group">
             <EnvelopeIcon className="absolute right-2 top-4 w-5 h-5 text-[#FFD1DC]" />
             <input
+              id="email"
               type="email"
               name="email"
               value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
-              required
+              required 
               className="peer w-full h-12 bg-transparent outline-none text-white px-1 pr-8"
             />
-            <label
+            <label htmlFor="email" 
               className="absolute left-1 top-1/2 transform -translate-y-1/2 text-white/80 font-medium text-sm transition-all duration-300 
               peer-focus:top-[-8px] peer-focus:text-sm 
               peer-valid:top-[-8px] peer-valid:text-sm
@@ -103,28 +105,37 @@ const Signup = () => {
           {/* Password */}
           <div className="relative border-b-2 border-white group">
             {showPassword ? (
-              <LockOpenIcon
+              <button
+                type="button"
+                aria-label="toggle password visibility"
+                tabIndex={0}
                 onClick={togglePassword}
-                className="absolute right-2 top-4 w-5 h-5 text-[#FFD1DC] cursor-pointer"
-              />
+                className="absolute right-2 top-4 w-5 h-5 text-[#FFD1DC] cursor-pointer" >
+                <LockOpenIcon />
+              </button>
             ) : (
-              <LockClosedIcon
+              <button
+                type="button"
+                aria-label="toggle password visibility"
+                tabIndex={0}
                 onClick={togglePassword}
                 className="absolute right-2 top-4 w-5 h-5 text-[#FFD1DC] cursor-pointer"
-              />
+              > <LockClosedIcon/> </button>
             )}
 
             <input
+              id="password"
+              data-testid="password-input"
               type={showPassword ? "text" : "password"}
               name="password"
               value={formData.password}
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
-              required
+              required 
               className="peer w-full h-12 bg-transparent outline-none text-white px-1 pr-8"
             />
-            <label
+            <label htmlFor="password" 
               className="absolute left-1 top-1/2 transform -translate-y-1/2 text-white/80 font-medium text-sm transition-all duration-300 
               peer-focus:top-[-8px] peer-focus:text-sm 
               peer-valid:top-[-8px] peer-valid:text-sm
