@@ -12,6 +12,8 @@ const Note = () => {
   const [editingNoteId, setEditingNoteId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showFavorites, setShowFavorites] = useState(false);
+  const [noteToDelete, setNoteToDelete] = useState(null);
+
   const token = localStorage.getItem("token");
   const location = useLocation();
   const navigate = useNavigate();
@@ -37,6 +39,14 @@ const Note = () => {
   };
 
   const handleCreateNote = async () => {
+    if (
+      !formData.title.trim() ||
+      formData.content.trim() === "" ||
+      formData.content.trim() === "<p></p>"
+    ) {
+      toast.error("Note must have a title and content");
+      return;
+    }
     try {
       const res = await axios.post(
         "http://localhost:5000/api/notes",
@@ -44,13 +54,23 @@ const Note = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setNotes([res.data, ...notes]);
+      toast.success("Note created successfully");
       resetForm();
     } catch (err) {
+      toast.error("Failed to create note.");
       console.error("Error creating note", err);
     }
   };
 
   const handleUpdateNote = async () => {
+    if (
+      !formData.title.trim() ||
+      formData.content.trim() === "" ||
+      formData.content.trim() === "<p></p>"
+    ) {
+      toast.error("Note must have a title and content");
+      return;
+    }
     try {
       const res = await axios.put(
         `http://localhost:5000/api/notes/${editingNoteId}`,
@@ -60,8 +80,10 @@ const Note = () => {
       setNotes(
         notes.map((note) => (note._id === editingNoteId ? res.data : note))
       );
+      toast.success("Note updated successfully");
       resetForm();
     } catch (err) {
+      toast.error("Failed to update note.");
       console.error("Error updating note", err);
     }
   };
@@ -72,7 +94,9 @@ const Note = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setNotes(notes.filter((note) => note._id !== id));
+      toast.success("Note deleted successfully");
     } catch (err) {
+      toast.error("Failed to delete note.");
       console.error("Error deleting note", err);
     }
   };
@@ -192,58 +216,95 @@ const Note = () => {
       )}
 
       {/* Notes List */}
-      <div className="grid md:grid-cols-3 sm:grid-cols-2 gap-6 w-full max-w-screen-xl">
-        {filteredNotes.map((note) => (
-          <div key={note._id} className="bg-white p-4 rounded shadow relative">
-            {/* Favorite Heart */}
-            <div
-              className="absolute top-3 right-3 cursor-pointer text-xl"
-              onClick={() => handleToggleFavorite(note._id)}
-            >
-              {note.isFavorite ? (
-                <FaHeart className="text-red-500" />
-              ) : (
-                <FaRegHeart className="text-gray-400 hover:text-red-400" />
-              )}
-            </div>
-
-            <h3 className="text-lg font-semibold">{note.title}</h3>
-            <div
-              className="text-gray-700 mt-2 prose"
-              dangerouslySetInnerHTML={{
-                __html:
-                  note.content.length > 100
-                    ? `${note.content.substring(0, 100)}...`
-                    : note.content,
-              }}
-            />
-
-            <p className="text-sm text-gray-500 mt-2">
-              {new Date(note.updatedAt).toLocaleString(undefined, {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: true,
-              })}
-            </p>
-            <div className="flex justify-end mt-3 space-x-3">
-              <button
-                className="text-blue-500"
-                onClick={() => handleEdit(note)}
+      <div className="w-full max-w-screen-xl">
+        {filteredNotes.length === 0 ? (
+          <p className="text-center text-gray-500 mt-10 text-lg">
+            No notes found.
+          </p>
+        ) : (
+          <div className="grid md:grid-cols-3 sm:grid-cols-2 gap-6">
+            {filteredNotes.map((note) => (
+              <div
+                key={note._id}
+                className="bg-white p-4 rounded shadow relative"
               >
-                Update
-              </button>
-              <button
-                className="text-red-500"
-                onClick={() => handleDelete(note._id)}
-              >
-                Delete
-              </button>
-            </div>
+                {/* Favorite Heart */}
+                <div
+                  className="absolute top-3 right-3 cursor-pointer text-xl"
+                  onClick={() => handleToggleFavorite(note._id)}
+                  data-testid={`favorite-toggle-${note._id}`}
+                >
+                  {note.isFavorite ? (
+                    <FaHeart className="text-red-500" />
+                  ) : (
+                    <FaRegHeart className="text-gray-400 hover:text-red-400" />
+                  )}
+                </div>
+
+                <h3 className="text-lg font-semibold">{note.title}</h3>
+                <div
+                  className="text-gray-700 mt-2 prose"
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      note.content.length > 100
+                        ? `${note.content.substring(0, 100)}...`
+                        : note.content,
+                  }}
+                />
+                <p className="text-sm text-gray-500 mt-2">
+                  {new Date(note.updatedAt).toLocaleString(undefined, {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
+                </p>
+                <div className="flex justify-end mt-3 space-x-3">
+                  <button
+                    className="text-blue-500"
+                    onClick={() => handleEdit(note)}
+                  >
+                    Update
+                  </button>
+                  <button
+                    className="text-red-500"
+                    onClick={() => setNoteToDelete(note._id)}
+                  >
+                    Delete
+                  </button>
+                  {noteToDelete && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-20">
+                      <div className="bg-white p-6 rounded shadow w-full max-w-sm text-center">
+                        <h2 className="text-lg font-semibold mb-4">
+                          Are you sure you want to delete this note?
+                        </h2>
+                        <div className="flex justify-center space-x-4">
+                          <button
+                            onClick={() => setNoteToDelete(null)}
+                            className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={() => {
+                              handleDelete(noteToDelete);
+                              setNoteToDelete(null);
+                            }}
+                            className="bg-[#cf457f] text-white px-4 py-2 rounded hover:bg-[#b83e6e]"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
     </div>
   );

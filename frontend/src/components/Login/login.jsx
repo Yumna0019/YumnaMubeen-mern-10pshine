@@ -63,6 +63,7 @@ const LoginForm = () => {
           <div className="relative border-b-2 border-white group">
             <EnvelopeIcon className="absolute right-2 top-4 w-5 h-5 text-[#FFD1DC]" />
             <input
+              id="email"
               type="email"
               name="email"
               value={formData.email}
@@ -72,7 +73,7 @@ const LoginForm = () => {
               required
               className="peer w-full h-12 bg-transparent outline-none text-white px-1 pr-8"
             />
-            <label
+            <label htmlFor="email"
               className="absolute left-1 top-1/2 transform -translate-y-1/2 text-white/80 font-medium text-sm transition-all duration-300 
               peer-focus:top-[-8px] peer-focus:text-sm 
               peer-valid:top-[-8px] peer-valid:text-sm
@@ -96,6 +97,7 @@ const LoginForm = () => {
               />
             )}
             <input
+              id="password"
               type={showPassword ? "text" : "password"}
               name="password"
               value={formData.password}
@@ -105,7 +107,7 @@ const LoginForm = () => {
               required
               className="peer w-full h-12 bg-transparent outline-none text-white px-1 pr-8"
             />
-            <label
+            <label htmlFor="password"
               className="absolute left-1 top-1/2 transform -translate-y-1/2 text-white/80 font-medium text-sm transition-all duration-300 
               peer-focus:top-[-8px] peer-focus:text-sm 
               peer-valid:top-[-8px] peer-valid:text-sm
