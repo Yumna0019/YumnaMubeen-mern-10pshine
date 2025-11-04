@@ -50,7 +50,3 @@ A **full-stack MERN application** for creating, organizing, and managing persona
    ```bash
    npm run dev
    ```
-
----
-
-Would you like me to make it sound **more concise for a GitHub README**, or keep it as a **detailed professional description** (like for a portfolio)?
