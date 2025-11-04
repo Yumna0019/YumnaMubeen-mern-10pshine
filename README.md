@@ -51,6 +51,6 @@ A **full-stack MERN application** for creating, organizing, and managing persona
    npm run dev
    ```
    
-Acknowledgment
+### Acknowledgment
 
 A heartfelt thank you to Sir Noman for his continuous guidance, mentorship, and support throughout this internship. Your feedback and encouragement made this learning experience truly valuable.
